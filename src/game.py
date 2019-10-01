@@ -63,7 +63,7 @@ HELP_TEXT = '''
     >   go downstairs (must be on stairs)
 '''
 
-DEFAULT_NUM_FLOORS   =  3
+DEFAULT_NUM_FLOORS   =  4
 DEFAULT_FLOOR_WIDTH  = 80
 DEFAULT_FLOOR_HEIGHT = 25
 
