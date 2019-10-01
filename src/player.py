@@ -57,12 +57,12 @@ class Player:
         self.level     = 1
         self.xp        = 0
         self.next_lvl  = XP_LEVELS[1]
-        self.hp        = 10
-        self.max_hp    = 10
+        self.hp        = 15
+        self.max_hp    = 15
         self.dmg       = "1d6"
         self.vis_range = 15
         self.gp        = 0
-        self.potions   = 1
+        self.potions   = 3
         self.name      = random.choice(NAMES)
         self.race      = random.choice(RACES)
         self.pclass    = random.choice(CLASSES)

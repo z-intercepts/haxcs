@@ -104,6 +104,71 @@ class NPC:
     def handle_attack(self, game, attacker):
         pass
 
+class zach(NPC):
+    
+    WALKABLE = ['.', '#', '<', '>']
+
+    @staticmethod
+    def generate(game):
+        # become less common the deeper you dive into the system
+          for f in range(len(game.floors)):
+              for i in range(random.randrange(0, 10-f)):
+                 game.npcs.append(Bug(f, game.floors[f].random_point_in_room()))
+    
+    def setup(self):
+        self.name  = "Zach"
+        self.glyph = "Z"
+        self.hp    = 5
+        self.dmg   = "1d1"
+        self.kxp   = 5
+
+    def pos_clear(self, game, pos):
+        return game.floors[self.floor].get_base_pt(pos) in self.WALKABLE and \
+               game.nothing_at(self.floor, pos)
+
+    def do_turn(self, game):
+
+        # if beside player, attack
+        for d in D_CARDINAL:
+            if self.pos.add(d) == game.player.pos:
+                game.add_status("The bug manifests!")
+                game.player.take_dmg(self.roll_damage())
+                return
+
+        # otherwise, with 2/3 probability wander aimlessly in a cardinal direction
+        if random.random() < 0.67:
+            newpt = self.pos.add(random.choice(D_CARDINAL))
+            if self.pos_clear(game, newpt):
+                self.pos = newpt
+
+    def handle_attack(self, game, attacker):
+        self.hp -= attacker.roll_damage()
+        if self.hp <= 0:
+
+            # with 1/3 probability, split into two rather than dying
+            # (if a new bug can't be created due to obstacles, the original
+            #  still remains alive)
+            if random.random() < 0.1:
+                self.hp = 1
+                for d in D_CARDINAL:
+                    newpt = self.pos.add(d)
+                    if self.pos_clear(game, self.pos.add(d)):
+                        game.add_status("Zach reproduces!")
+                        game.npcs.append(Bug(self.floor, newpt))
+                        break
+            else:
+                # bug is actually dead
+                game.add_status("He deserved what he got")
+                game.npcs.remove(self)
+                game.player.xp += self.kxp
+
+                # display special message if all bugs on the floor are dead
+                for npc in game.npcs:
+                    if npc.name == "Bug" and npc.floor == self.floor:
+                        return
+                game.add_status("You stopped Zach from coding ever again!")
+
+
 
 class Bug(NPC):
     '''
